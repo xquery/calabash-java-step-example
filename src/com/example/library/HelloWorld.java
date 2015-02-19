@@ -1,4 +1,4 @@
-package com.nwalsh.library;
+package com.example.library;
 
 import com.xmlcalabash.library.DefaultStep;
 import com.xmlcalabash.core.XProcConstants;
@@ -12,8 +12,8 @@ import net.sf.saxon.s9api.XdmNode;
 import com.xmlcalabash.runtime.XAtomicStep;
 
 @XMLCalabash(
-        name = "nw:hello-world",
-        type = "{http://nwalsh.com/xmlcalabash/steps}hello-world")
+        name = "ex:hello-world",
+        type = "{http://example.org/xmlcalabash/steps}hello-world")
 
 public class HelloWorld extends DefaultStep {
     private WritablePipe result = null;
