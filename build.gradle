@@ -1,0 +1,68 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath group: 'net.sf.saxon', name: 'Saxon-HE', version: saxonVersion
+  }
+}
+
+plugins {
+  id "java"
+  id "osgi"
+  id "maven"
+}
+
+project.ext.saxonRelease = saxonVersion.substring(0,5)
+project.ext.saxonBranch  = saxonVersion.substring(0,3).replaceAll("\\.", "")
+project.ext.releaseVersion = version
+project.ext.distVersion = version + snapshot
+version = project.ext.distVersion // - gets turned into . in some contexts
+jar.archiveName = "example-library-ext.jar"
+
+repositories {
+  mavenCentral()
+  maven { url "http://maven.restlet.org" }
+  maven { url "http://developer.marklogic.com/maven2" }
+  maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+}
+
+dependencies {
+  compile (
+    [group: 'com.nwalsh', name: 'nwalsh-annotations', version: '1.0.0'],
+    [group: 'com.xmlcalabash', name: 'xmlcalabash', version: '1.0.30-96'],
+  )
+}
+
+jar {
+  from { ['example-library.xpl'] }
+  manifest {
+    instruction 'Built-By', builtBy
+    instruction 'Implementation-Vendor', 'Jim Fuller'
+    instruction 'Implementation-Title', 'XML Calabash custom step library'
+    instruction 'Implementation-Version', distVersion
+    instruction 'Bundle-SymbolicName', 'com.example.library'
+    instruction 'Bundle-RequiredExecutionEnvironment', 'J2SE-1.7'
+    instruction 'Export-Package', '*, etc'
+    instruction 'DynamicImport-Package', '*'
+  }
+}
+
+task copyJar(dependsOn: jar, type: Copy) {
+  from "build/libs/" + jar.archiveName
+  into "build/dist"
+}
+
+task makeDist(dependsOn: [ build, copyJar ]) << {
+  println "Created distribution in build/dist"
+}
+
+task zipDist(dependsOn: makeDist, type: Zip) {
+  from('build/dist')
+  into jar.archiveName
+  archiveName 'xmlcalabash-custom-step-java-' + distVersion + ".zip"
+}
+
+
+
